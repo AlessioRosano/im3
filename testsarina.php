@@ -1,6 +1,6 @@
 <?php
 
-$name = "Sarina Da Ros";
+$name = "Sarina Da";
 echo "Hallo $name, wie geht's?";
 
 
@@ -13,7 +13,7 @@ echo $a + $b;
 
 
 
-echo multiply(5, 10); //-->anstatt console.log in JS
+// echo multiply(5, 10); //-->anstatt console.log in JS
 
 
 $banane = array("gelb", "süss", 5); 
@@ -23,4 +23,3 @@ echo '<pre>';
 print_r($banane);
 echo '</pre>';
 
-?>
