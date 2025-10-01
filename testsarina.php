@@ -6,7 +6,7 @@ echo "Hallo $name, wie geht's?";
 
 echo '<br>';
 
-$a = 5;
+$a = 10;
 $b = 10;
 echo $a + $b;
 
@@ -22,4 +22,4 @@ $banane = array("gelb", "süss", 5);
 echo '<pre>';
 print_r($banane);
 echo '</pre>';
-
+ 
