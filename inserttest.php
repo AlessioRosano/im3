@@ -22,7 +22,7 @@ try {
     $stmt -> execute([
         $data['firstname'],
         $data['lastname'],
-        $data['email']
+        $data['email'],
     ]);
 
 
