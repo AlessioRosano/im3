@@ -1,13 +1,12 @@
 <?php
 
 // Definition der Verbindungsparameter für die Datenbank
-$host     = 'av0lj6.myd.infomaniak.com';     // Hostserver, auf dem die DB läuft.
+$host     = 'i90w86.myd.infomaniak.com';     // Hostserver, auf dem die DB läuft.
 // «localhost» bedeutet: die selbe Serveradresse, auf dem auch die Seiten gespeichert sind
 
-$dbname   = '	
-av0lj6_test';   // Name der Datenbank
-$username = 'av0lj6_Alessio';   // Benutzername für die DB
-$password = 'Gtbike.14';   // Passwort für die DB
+$dbname   = 'i90w86_im3alessiosarina';   // Name der Datenbank
+$username = 'i90w86_Sarina';   // Benutzername für die DB
+$password = '8.yGYTzOhhJJ';   // Passwort für die DB
 
 
 // DSN (Datenquellenname) für PDO
