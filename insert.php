@@ -2,7 +2,7 @@
 
 // assoziative array 
 
-$data = ["firstname" => "Alessio", "lastname" => "Rosano", "email" => "alessio.rosano@stud.fhgr.ch"];
+$data = ["firstname" => "Alessio", "lastname" => "Rosano", "email" => "sarina.lia@stud.fhgr.ch"];
 
 require_once 'config.php';
 
@@ -20,7 +20,8 @@ try {
  $stmt->execute([
             $data['firstname'],
             $data['lastname'],
-            $data['email'],]);
+            $data['email'],
+        ]);
 
 
     echo "Daten erfolgreich eingefügt.";
