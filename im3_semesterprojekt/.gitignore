@@ -1,0 +1,7 @@
+*sftp.json
+.vscode/
+uploads/
+.ds_store
+im3_config.php //muss im projekt sein, darf aber nicht ins repo
+
+
