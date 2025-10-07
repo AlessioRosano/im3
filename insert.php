@@ -2,7 +2,7 @@
 
 // assoziative array 
 
-$data = ["firstname" => "Alessio", "lastname" => "Rosano", "email" => "alessio.rosano@stud.fhgr.ch"];
+$data = ["firstname" => "Alessio", "lastname" => "Rosano", "email" => "sarina.rosano@stud.fhgr.ch"];
 
 require_once 'config.php';
 
