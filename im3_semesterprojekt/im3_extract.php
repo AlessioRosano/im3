@@ -39,3 +39,5 @@ print_r($respone);
 
 // Gibt die Daten zurück, wenn dieses Skript eingebunden ist
 return fetchDatenStadtSG();
+
+?>
