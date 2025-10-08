@@ -5,4 +5,5 @@ uploads/
 */im3_semesterporjekt/im3_config.php //muss im projekt sein, darf aber nicht ins repo
 */im3_semesterprojekt/im3_cron.php
 
-
+*/junk/config.php
+*/junk/configtest.php
