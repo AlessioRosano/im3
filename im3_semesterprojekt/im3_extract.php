@@ -1,19 +1,21 @@
 <?php
 declare(strict_types=1);
 
-// im3_extract.php – Lazy-Sync in DB + Rückgabe der letzten 100 Zeilen
+// im3_extract.php – Lazy-Sync: API -> DB, dann letzte 100 Zeilen aus DB zurückgeben
+// Wichtig: kein echo/print – nur return des Arrays
 
 require __DIR__ . '/im3_config.php';
+
 $pdo = new PDO($dsn, $username, $password, $options);
 
-// --- Settings ---
-const LIMIT_PER_PAGE    = 100;   // Opendatasoft v2.1 max 100
-const MAX_BATCHES_SYNC  = 6;     // pro Aufruf max. ~600 Datensätze (schont Rate-Limit)
-const OFFSET_CAP        = 9800;  // Sicherheit für initialen Backfill
-const MAX_RETRIES_429   = 3;
-const RETRY_BACKOFF_SEC = 3;
+// --- Einstellungen ---
+const LIMIT_PER_PAGE    = 100;   // Opendatasoft v2.1: max 100
+const MAX_BATCHES_SYNC  = 6;     // pro Aufruf max. ~600 Datensätze (schont Rate-Limits)
+const OFFSET_CAP        = 9800;  // Sicherheitsgrenze für initialen Backfill (ohne WHERE)
+const MAX_RETRIES_429   = 3;     // max. Wiederholungen bei 429
+const RETRY_BACKOFF_SEC = 3;     // Basispause für 429-Retry
 
-// --- Upsert (ohne 'summe' – wird in DB generiert) ---
+// --- UPSERT (summe ist GENERATED -> NICHT schreiben) ---
 $upsert = $pdo->prepare("
   INSERT INTO fussgaenger_vadianstrasse
     (device_id, measured_at_new, datum_tag, data_right, data_left)
@@ -26,17 +28,20 @@ $upsert = $pdo->prepare("
     updated_at = CURRENT_TIMESTAMP
 ");
 
-// --- letzter gespeicherter Zeitpunkt (UTC) ---
+// --- letzten gespeicherten Zeitpunkt (UTC) ermitteln ---
 $last = $pdo->query("SELECT MAX(measured_at_new) AS mx FROM fussgaenger_vadianstrasse")->fetch()['mx'] ?? null;
 
-// --- WHERE für inkrementelles Nachladen ---
+// --- WHERE für inkrementelles Nachladen bauen ---
 $where = null;
 if ($last) {
   $dt = DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $last, new DateTimeZone('UTC'));
-  if ($dt) $where = 'measured_at_new > "' . $dt->format('Y-m-d\TH:i:s\Z') . '"';
+  if ($dt) {
+    // API erwartet ISO-8601 mit Z (UTC)
+    $where = 'measured_at_new > "' . $dt->format('Y-m-d\TH:i:s\Z') . '"';
+  }
 }
 
-// --- API-Page-Fetcher mit 429-Backoff ---
+// --- API-Page-Fetcher mit einfachem 429-Backoff ---
 function fetchPage(int $offset, ?string $where, int $try = 0): array {
   $base = 'https://daten.stadt.sg.ch/api/explore/v2.1/catalog/datasets/fussganger-stgaller-innenstadt-vadianstrasse/records';
   $params = [
@@ -47,6 +52,7 @@ function fetchPage(int $offset, ?string $where, int $try = 0): array {
   if ($where) $params['where'] = $where;
 
   $url = $base . '?' . http_build_query($params);
+
   $ch = curl_init($url);
   curl_setopt_array($ch, [
     CURLOPT_RETURNTRANSFER => true,
@@ -55,31 +61,35 @@ function fetchPage(int $offset, ?string $where, int $try = 0): array {
     CURLOPT_TIMEOUT        => 25,
     CURLOPT_HTTPHEADER     => ['Accept: application/json', 'User-Agent: im3-extract/1.0'],
   ]);
-  $res = curl_exec($ch);
-  if ($res === false) { $e = curl_error($ch); curl_close($ch); throw new RuntimeException('cURL: '.$e); }
+  $res  = curl_exec($ch);
   $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
   curl_close($ch);
 
+  if ($res === false) {
+    // Transportfehler -> freundlich abbrechen
+    return [];
+  }
   if ($code === 429) {
-    if ($try >= MAX_RETRIES_429) return []; // freundlich abbrechen
+    if ($try >= MAX_RETRIES_429) return []; // aufgeben
     sleep(RETRY_BACKOFF_SEC * max(1, $try + 1));
     return fetchPage($offset, $where, $try + 1);
   }
   if ($code < 200 || $code >= 300) {
-    throw new RuntimeException('HTTP '.$code);
+    // andere HTTP-Fehler -> abbrechen
+    return [];
   }
 
   $json = json_decode($res, true);
   return $json['results'] ?? [];
 }
 
-// --- Lazy-Sync ---
+// --- Lazy-Sync: inkrementell oder Erstbefüllung ---
 $offset  = 0;
 $batches = 0;
 
 try {
   if ($where) {
-    // Inkrementell: nur neue Datensätze seit letztem DB-Zeitpunkt
+    // Inkrementell
     while ($batches < MAX_BATCHES_SYNC) {
       $batch = fetchPage($offset, $where);
       if (!$batch) break;
@@ -91,31 +101,25 @@ try {
         $datumTag = $r['datum_tag'] ?? null;
         if (!$iso || !$datumTag) continue;
 
-        $right = (int)($r['data_right'] ?? 0);
-        $left  = (int)($r['data_left']  ?? 0);
-
-        // ISO → MySQL DATETIME (UTC)
         $mysqlUtc = (new DateTimeImmutable($iso))
-                      ->setTimezone(new DateTimeZone('UTC'))
-                      ->format('Y-m-d H:i:s');
+          ->setTimezone(new DateTimeZone('UTC'))
+          ->format('Y-m-d H:i:s');
 
         $upsert->execute([
           ':device_id'       => $r['device_id'] ?? null,
           ':measured_at_new' => $mysqlUtc,
           ':datum_tag'       => $datumTag,
-          ':data_right'      => $right,
-          ':data_left'       => $left,
+          ':data_right'      => (int)($r['data_right'] ?? 0),
+          ':data_left'       => (int)($r['data_left'] ?? 0),
         ]);
 
         $lastSeenIso = $iso;
       }
 
-      // Fortschritt hochziehen
+      // Fortschritt nachziehen
       if ($lastSeenIso) {
-        $lastUtcIso = (new DateTimeImmutable($lastSeenIso))
-                        ->setTimezone(new DateTimeZone('UTC'))
-                        ->format('Y-m-d\TH:i:s\Z');
-        $where  = 'measured_at_new > "' . $lastUtcIso . '"';
+        $where  = 'measured_at_new > "' . (new DateTimeImmutable($lastSeenIso))
+          ->setTimezone(new DateTimeZone('UTC'))->format('Y-m-d\TH:i:s\Z') . '"';
         $offset = 0;
       } else {
         $offset += LIMIT_PER_PAGE;
@@ -125,7 +129,7 @@ try {
     }
 
   } else {
-    // Erstbefüllung: Voll-Backfill (ohne WHERE, aber gedeckelt)
+    // Erstbefüllung (Backfill) – ohne WHERE, in Seiten
     while ($batches < MAX_BATCHES_SYNC && $offset <= OFFSET_CAP) {
       $batch = fetchPage($offset, null);
       if (!$batch) break;
@@ -135,19 +139,16 @@ try {
         $datumTag = $r['datum_tag'] ?? null;
         if (!$iso || !$datumTag) continue;
 
-        $right = (int)($r['data_right'] ?? 0);
-        $left  = (int)($r['data_left']  ?? 0);
-
         $mysqlUtc = (new DateTimeImmutable($iso))
-                      ->setTimezone(new DateTimeZone('UTC'))
-                      ->format('Y-m-d H:i:s');
+          ->setTimezone(new DateTimeZone('UTC'))
+          ->format('Y-m-d H:i:s');
 
         $upsert->execute([
           ':device_id'       => $r['device_id'] ?? null,
           ':measured_at_new' => $mysqlUtc,
           ':datum_tag'       => $datumTag,
-          ':data_right'      => $right,
-          ':data_left'       => $left,
+          ':data_right'      => (int)($r['data_right'] ?? 0),
+          ':data_left'       => (int)($r['data_left'] ?? 0),
         ]);
       }
 
@@ -155,13 +156,11 @@ try {
       $batches++;
     }
   }
-
 } catch (Throwable $e) {
-  // weich: wir liefern unten die DB-Daten, auch wenn API gerade zickt
-  // (429 wird oben ohnehin abgefedert)
+  // weich: wir liefern unten die DB-Daten, auch wenn API kurz zickt
 }
 
-// --- Daten aus DB lesen und zurückgeben ---
+// --- Aus DB lesen und zurückgeben ---
 $stmt = $pdo->prepare("
   SELECT device_id, measured_at_new, datum_tag, data_right, data_left, summe
   FROM fussgaenger_vadianstrasse
@@ -171,4 +170,4 @@ $stmt = $pdo->prepare("
 $stmt->execute();
 $rows = $stmt->fetchAll();
 
-return $rows; // nur return – kein echo
+return $rows; // Array zurückgeben
