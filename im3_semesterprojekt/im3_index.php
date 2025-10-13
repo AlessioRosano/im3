@@ -26,7 +26,7 @@
       <div class="d-grafik-hero">
         <!-- Spielfeld mit Ball-Layer -->
         <div class="field-wrap">
-          <img src="./kybunpark.png" alt="Fussballfeld Kybunpark" class="field-image" />
+          <img src="kybunpark.png" alt="Fussballfeld Kybunpark" class="field-image" />
           <div id="balls-layer" class="balls-layer" aria-live="polite"></div>
         </div>
 
