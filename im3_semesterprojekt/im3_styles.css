@@ -77,7 +77,8 @@ body {
   inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover;        /* füllt den Container */
+  object-fit: contain;   /* <--- hier ändern */
+  object-position: center; /* zentriert das Bild */
   display: block;
 }
 
@@ -85,6 +86,20 @@ body {
   position: absolute;
   inset: 0;
   pointer-events: none;     /* verhindert Klicks auf Bälle */
+}
+
+/* Begrenze den Bereich, in dem sich die Bälle bewegen dürfen */
+.balls-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  /* ClipPath auf die Spielfeldfläche */
+  clip-path: polygon(30% 34%, 70% 34%, 70% 76%, 30% 76%);
+  overflow: hidden;
+}
+
+.balls-layer {
+  background: none /* rgba(255, 0, 0, 0.3);halbtransparentes Rot zum Testen */
 }
 
 /* Ein Ball */
@@ -141,9 +156,17 @@ body {
 .d-grafik-daypicker-icon {
   width: 624px;
   height: 429px;
-  background: rgba(255,255,255,.06);
-  border: 1px dashed rgba(255,255,255,.15);
   border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+}
+
+.d-grafik-daypicker-icon img.daypicker-image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .d-text-daypicker {
@@ -210,10 +233,143 @@ body {
 }
 
 /* ====== Popup ====== */
+/* Popup Overlay */
 .popup-overlay {
+  display: none;
   position: fixed;
   inset: 0;
-  display: none;
+  background-color: rgba(0,0,0,0.25);
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: 16px;
+}
+
+/* Pop-up Box */
+.d-daypicker {
+  background: #ACABAB;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 360px;
+  width: 100%;
+}
+
+/* Kalender Styling */
+.calendar-month {
+  font-size: 18px;
+  font-weight: 500;
+  text-align: center;
+  margin: 12px 0;
+}
+
+#calendar {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+}
+
+#calendar .day {
+  padding: 10px 0;
+  text-align: center;
+  cursor: pointer;
+  border-radius: 8px;
+}
+
+#calendar .day:hover {
+  background-color: #ddd;
+}
+
+#calendar .selected {
+  background-color: #1a482b;
+  color: #fff;
+}
+
+/* Input Styling */
+.date-input {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 16px;
+  box-sizing: border-box;
+  cursor: pointer;
+}
+
+/* Label für Screenreader */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/*monats anzeige */
+.calendar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 12px 0;
+}
+
+.month-nav {
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+}
+
+.calendar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+/* ====== Pfeile ====== */
+
+/* Pfeile Basis */
+.month-nav {
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+  position: relative;
+}
+
+/* Linker Pfeil */
+.arrow-left::before {
+  content: "";
+  display: block;
+  width: 10px;
+  height: 10px;
+  border-left: 3px solid #fff;
+  border-bottom: 3px solid #fff;
+  transform: rotate(45deg);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+/* Rechter Pfeil */
+.arrow-right::before {
+  content: "";
+  display: block;
+  width: 10px;
+  height: 10px;
+  border-right: 3px solid #fff;
+  border-top: 3px solid #fff;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(45deg);
 }
 
 /* ====== Responsive ====== */

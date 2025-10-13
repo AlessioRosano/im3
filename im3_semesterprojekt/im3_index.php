@@ -26,7 +26,7 @@
       <div class="d-grafik-hero">
         <!-- Spielfeld mit Ball-Layer -->
         <div class="field-wrap">
-          <img src="kybunpark.png" alt="Fussballfeld Kybunpark" class="field-image" />
+          <img src="./kybunpark.png" alt="Fussballfeld Kybunpark" class="field-image" />
           <div id="balls-layer" class="balls-layer" aria-live="polite"></div>
         </div>
 
@@ -42,7 +42,10 @@
     <div class="d-passantenanzahl-datum">
       <div class="features">
         <div class="frame">
-          <div class="d-grafik-daypicker-icon"></div>
+          <div class="d-grafik-daypicker-icon">
+            <img src="./fussballfeld.png" alt="Fussballfeld" class="daypicker-image">
+            </div>
+          </div>
           <div class="d-text-daypicker">
             <div class="d-home-wie-viele-personen">
               Wie viele Personen gingen durch die Stadt St. Gallen am …
@@ -72,36 +75,149 @@
     </div>
   </div>
 
-  <!-- Popup-Container (einfach belassen) -->
-  <div id="dDaypickerContainer" class="popup-overlay" style="display:none">
-    <div class="d-daypicker">
-      <div class="date-wrapper"><b class="date">YYYY/MM/DD</b></div>
-      <div class="date-parent">
-        <div class="d-daypicker-date">
-          <div class="selectordate"><div class="date2">Januar 2025</div></div>
-        </div>
-        <!-- Hier könnte dein Kalender-Markup stehen -->
-      </div>
+<!-- Popup-Container -->
+<div id="dDaypickerContainer" class="popup-overlay">
+  <div class="d-daypicker">
+    <!-- Input-Feld -->
+    <div class="input-wrapper">
+      <label for="popup-date-input" class="sr-only">Datum wählen</label>
+      <input id="popup-date-input" type="text" placeholder="YYYY-MM-DD" class="date-input">
     </div>
+
+    <!-- Monat anzeigen -->
+    <!-- Monat anzeigen mit CSS-Pfeilen -->
+<div class="calendar-header">
+  <div class="month-nav arrow-left" id="prev-month"></div>
+  <div id="calendar-month" class="calendar-month"></div>
+  <div class="month-nav arrow-right" id="next-month"></div>
+</div>
+
+    <!-- Kalender -->
+    <div id="calendar"></div>
   </div>
+</div>
+
 
   <!-- Popup JS -->
-  <script>
-    const dButtonDate = document.getElementById("dButtonDate");
-    if (dButtonDate) {
-      dButtonDate.addEventListener("click", function () {
-        const popup = document.getElementById("dDaypickerContainer");
-        if (!popup) return;
-        const s = popup.style;
-        s.display = "flex"; s.zIndex = 100; s.backgroundColor = "rgba(0,0,0,.25)";
-        s.alignItems = "center"; s.justifyContent = "center";
-        popup.setAttribute("closable", "");
-        popup.addEventListener("click", function (e) {
-          if (e.target === popup && popup.hasAttribute("closable")) s.display = "none";
-        });
+<script>
+const dButtonDate = document.getElementById("dButtonDate");
+const popup = document.getElementById("dDaypickerContainer");
+const dateInput = document.getElementById("popup-date-input");
+const calendarMonthEl = document.getElementById('calendar-month');
+const calendarEl = document.getElementById("calendar");
+const prevMonthBtn = document.getElementById('prev-month');
+const nextMonthBtn = document.getElementById('next-month');
+
+// Variable für aktuell angezeigten Monat
+let currentCalendarDate = new Date();
+
+// Öffnen / Schließen
+dButtonDate.addEventListener("click", () => popup.style.display = "flex");
+popup.addEventListener("click", e => { if(e.target === popup) popup.style.display = "none"; });
+
+// Kalender erstellen
+function renderCalendar(date = currentCalendarDate) {
+  currentCalendarDate = date; // speichere aktuell angezeigten Monat
+  calendarEl.innerHTML = "";
+  const year = date.getFullYear();
+  const month = date.getMonth();
+
+  // Monatsname setzen
+  const monthNames = ["Januar","Februar","März","April","Mai","Juni",
+                      "Juli","August","September","Oktober","November","Dezember"];
+  calendarMonthEl.textContent = monthNames[month] + ' ' + year;
+
+  // erster Tag des Monats
+  const firstDay = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+  // leere Felder für Anfang
+  for(let i = 0; i < firstDay; i++) {
+    const empty = document.createElement('div');
+    calendarEl.appendChild(empty);
+  }
+
+  // Tage einfügen
+  for(let d = 1; d <= daysInMonth; d++) {
+    const dayEl = document.createElement('div');
+    dayEl.textContent = d;
+    dayEl.className = 'day';
+    dayEl.addEventListener('click', () => {
+      calendarEl.querySelectorAll('.day').forEach(e => e.classList.remove('selected'));
+      dayEl.classList.add('selected');
+
+      const selectedDate = new Date(year, month, d);
+      dateInput.value = selectedDate.toISOString().split('T')[0];
+      popup.style.display = 'none';
+      dButtonDate.querySelector('b').textContent = dateInput.value;
+    });
+    calendarEl.appendChild(dayEl);
+  }
+}
+
+prevMonthBtn.addEventListener('click', () => {
+  const newDate = new Date(currentCalendarDate.getFullYear(), currentCalendarDate.getMonth() - 1, 1);
+  renderCalendar(newDate);
+});
+
+nextMonthBtn.addEventListener('click', () => {
+  const newDate = new Date(currentCalendarDate.getFullYear(), currentCalendarDate.getMonth() + 1, 1);
+  renderCalendar(newDate);
+});
+
+// Input klickbar: öffnet Pop-up
+dateInput.addEventListener('click', () => popup.style.display = "flex");
+
+dateInput.addEventListener('change', () => {
+  const parts = dateInput.value.split('-'); // YYYY-MM-DD
+  if(parts.length === 3) {
+    const [y, m, d] = parts.map(Number);
+    if(!isNaN(y) && !isNaN(m) && !isNaN(d)) {
+      const newDate = new Date(y, m - 1, d);
+      renderCalendar(newDate);
+
+      // markiere gewählten Tag
+      const dayElements = calendarEl.querySelectorAll('.day');
+      dayElements.forEach(e => {
+        e.classList.remove('selected');
+        if(Number(e.textContent) === d) e.classList.add('selected');
       });
     }
-  </script>
+  }
+});
+
+// Input per Enter aktualisieren
+dateInput.addEventListener('keydown', e => {
+  if(e.key === 'Enter') {
+    const parts = dateInput.value.split('-'); // YYYY-MM-DD
+    if(parts.length === 3) {
+      const [y, m, d] = parts.map(Number);
+      if(!isNaN(y) && !isNaN(m) && !isNaN(d)) {
+        const newDate = new Date(y, m - 1, d);
+        renderCalendar(newDate);
+
+        // markiere gewählten Tag
+        const dayElements = calendarEl.querySelectorAll('.day');
+        dayElements.forEach(el => {
+          el.classList.remove('selected');
+          if(Number(el.textContent) === d) el.classList.add('selected');
+        });
+
+        // Popup optional schließen
+        popup.style.display = 'none';
+
+        // Button-Text aktualisieren
+        dButtonDate.querySelector('b').textContent = dateInput.value;
+      } else {
+        alert('Ungültiges Datum');
+      }
+    } else {
+      alert('Datum muss das Format YYYY-MM-DD haben');
+    }
+  }
+});
+
+</script>
 
   <!-- Ball-Logik + Tageszähler -->
   <script>
