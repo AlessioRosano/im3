@@ -1,12 +1,9 @@
-# CORS für API
+# Allow cross-origin requests to your JSON endpoint
 <IfModule mod_headers.c>
   Header set Access-Control-Allow-Origin "*"
   Header set Access-Control-Allow-Methods "GET, POST, OPTIONS"
   Header set Access-Control-Allow-Headers "Content-Type"
 </IfModule>
 
-# Für Preflight-Requests (OPTIONS) nichts blockieren
-RewriteEngine On
-RewriteCond %{REQUEST_METHOD} =OPTIONS
-RewriteRule .* - [R=204,L]
-
+# Make sure PHP handles .php files (usual default on Infomaniak)
+AddType application/x-httpd-php .php

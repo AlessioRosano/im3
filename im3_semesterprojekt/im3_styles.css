@@ -2706,3 +2706,77 @@
   	line-height: 150%;
 }
 
+/* Spielfeld-Layer */
+.field-wrap {
+  position: relative;
+  width: 608px;           /* wie bisher .d-grafik-hero */
+  max-width: 100%;
+  aspect-ratio: 608 / 518;   /* optional, damit das Verhältnis steht */
+  overflow: hidden;
+  border-radius: 12px;
+}
+.field-image {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* Ebene für die Bälle über dem Bild */
+.balls-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+/* Ein einzelner Ball */
+.ball {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  background-image: url('/im3_semesterprojekt/img/fussball.png'); /* oder SVG */
+  background-size: cover;
+  background-repeat: no-repeat;
+  will-change: transform;
+  animation: drift linear infinite;
+  opacity: 0.95;
+}
+
+/* sanftes Driften */
+@keyframes drift {
+  from { transform: translate(var(--x0), var(--y0)); }
+  to   { transform: translate(var(--x1), var(--y1)); }
+}
+
+/* Zahlenanzeige hübsch monospaced */
+.personen { font-variant-numeric: tabular-nums; }
+
+/* ==== Dynamische Fussbälle (JS) ==== */
+#ballContainer {
+  position: absolute; /* du hast schon absolute Werte oben – gut */
+  overflow: hidden;
+}
+
+.ball {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, #ffffff, #eaeaea 60%, #d5d5d5 100%);
+  box-shadow: 0 0 4px rgba(0,0,0,.15);
+  opacity: 0.95;
+  /* sanftes Schweben */
+  animation-name: driftY;
+  animation-iteration-count: infinite;
+  animation-timing-function: ease-in-out;
+}
+
+@keyframes driftY {
+  0%   { transform: translateY(0px); }
+  50%  { transform: translateY(-6px); }
+  100% { transform: translateY(0px); }
+}
+
+/* sanfte Positionswechsel */
+.ball.move {
+  transition: transform 6s ease-in-out, left 6s ease-in-out, top 6s ease-in-out;
+}
