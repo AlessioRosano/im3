@@ -2,6 +2,8 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
+  <!-- Sagt dem Browser: relative URLs kommen aus /im3_semesterprojekt/ -->
+<base href="/im3_semesterprojekt/">
   <meta charset="utf-8" />
   <meta name="viewport" content="initial-scale=1, width=device-width" />
   <title>Passanten St. Gallen</title>
