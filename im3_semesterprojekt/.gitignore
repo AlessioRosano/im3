@@ -1,9 +1,0 @@
-*sftp.json
-.vscode/
-uploads/
-.ds_store
-im3_config.php 
-/im3_cron.php
-/im3_cron.log
-
-

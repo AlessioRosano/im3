@@ -9,4 +9,15 @@ uploads/
 */junk/configtest.php
 */im3_sarina/config.php
 
-*/im3_config.php 
+*/im3_config.php
+
+*sftp.json
+.vscode/
+uploads/
+.ds_store
+im3_config.php 
+/im3_cron.php
+/im3_cron.log
+
+.DS_Store
+
