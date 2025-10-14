@@ -6,8 +6,8 @@
   <meta name="viewport" content="initial-scale=1, width=device-width" />
   <title>Passanten St. Gallen</title>
 
-  <!-- CSS liegt im selben Ordner -->
-  <link rel="stylesheet" href="./im3_styles.css?v=10" />
+  <!-- CSS (liegt im selben Ordner) -->
+  <link rel="stylesheet" href="./im3_styles.css?v=11" />
 
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -17,360 +17,316 @@
 <body>
 
   <div class="d-home">
-    <div class="d-hero">
+    <!-- HERO -->
+    <section class="d-hero">
       <div class="d-text-hero">
         <b class="wie-viele-personen">Wie viele Personen gingen heute durch St.Gallen?</b>
         <div class="relativ-zur-stadiongrsse">relativ zur Stadiongrösse des Kybunparks</div>
       </div>
 
       <div class="d-grafik-hero">
-        <!-- Spielfeld mit Ball-Layer -->
         <div class="field-wrap">
           <img src="./kybunpark.png" alt="Fussballfeld Kybunpark" class="field-image" />
           <div id="balls-layer" class="balls-layer" aria-live="polite"></div>
         </div>
 
-        <!-- Live-Zähler -->
         <div class="personen-parent">
           <div class="personen" id="people-count">– PERSONEN</div>
           <div class="personen" id="percent-kybun">–%</div>
         </div>
       </div>
-    </div>
+    </section>
 
-    <!-- Datum/Text (optional – lässt sich später verdrahten) -->
-    <div class="d-passantenanzahl-datum">
+    <!-- DATUMSBEREICH -->
+    <section class="d-passantenanzahl-datum">
       <div class="features">
-        <div class="frame">
-          <div class="d-grafik-daypicker-icon">
-            <img src="./fussballfeld.png" alt="Fussballfeld" class="daypicker-image">
+        <div class="d-grafik-daypicker-icon">
+          <img src="./fussballfeld.png" alt="Fussballfeld" class="daypicker-image">
+          <div id="balls-layer-date" class="balls-layer" aria-live="polite"></div>
+        </div>
+
+        <div class="d-text-daypicker">
+          <div class="d-home-wie-viele-personen">
+            Wie viele Personen gingen durch die Stadt St. Gallen am …
+          </div>
+
+          <div class="d-home-frame">
+            <div class="d-button-date" id="dButtonDate" role="button" aria-haspopup="dialog" aria-controls="dDaypickerContainer">
+              <b class="jjjj-mm-dd">JJJJ-MM-DD</b>
             </div>
           </div>
-          <div class="d-text-daypicker">
-            <div class="d-home-wie-viele-personen">
-              Wie viele Personen gingen durch die Stadt St. Gallen am …
-            </div>
-            <div class="d-home-frame">
-              <div class="d-button-date" id="dButtonDate">
-                <b class="jjjj-mm-dd">JJJJ-MM-DD</b>
-              </div>
-            </div>
-            <div class="es-waren-xy-personen-am-jjjj-m-wrapper">
-              <div class="es-waren-xy-container">
+
+          <div class="es-waren-xy-personen-am-jjjj-m-wrapper">
+            <div class="es-waren-xy-container">
               <span>Es waren </span><b id="xyCount">XY</b><span> Personen am </span><b id="xyDate">JJJJ-MM-DD</b><span> unterwegs.</span>
-              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </section>
 
-    <!-- Footer -->
-    <div class="d-footer">
+    <!-- FOOTER -->
+    <footer class="d-footer">
       <div class="d-line-footer"></div>
       <div class="copywright-2025-sarina-container">
-        <p class="sarina-da-ros">Copywright 2025</p>
-        <p class="sarina-da-ros">Sarina Da Ros & Alessio Rosano</p>
+        <p>Copywright 2025</p>
+        <p>Sarina Da Ros &amp; Alessio Rosano</p>
       </div>
+    </footer>
+  </div>
+
+  <!-- POPUP: DATE PICKER -->
+  <div id="dDaypickerContainer" class="popup-overlay" style="display:none">
+    <div class="d-daypicker" role="dialog" aria-modal="true" aria-label="Datum wählen">
+      <div class="input-wrapper">
+        <label for="popup-date-input" class="sr-only">Datum wählen</label>
+        <input id="popup-date-input" type="text" placeholder="YYYY-MM-DD" class="date-input">
+      </div>
+
+      <div class="calendar-header">
+        <div class="month-nav arrow-left" id="prev-month" aria-label="Vorheriger Monat" role="button" tabindex="0"></div>
+        <div id="calendar-month" class="calendar-month"></div>
+        <div class="month-nav arrow-right" id="next-month" aria-label="Nächster Monat" role="button" tabindex="0"></div>
+      </div>
+
+      <div id="calendar" aria-label="Kalender"></div>
     </div>
   </div>
 
-<!-- Popup-Container -->
-<div id="dDaypickerContainer" class="popup-overlay">
-  <div class="d-daypicker">
-    <!-- Input-Feld -->
-    <div class="input-wrapper">
-      <label for="popup-date-input" class="sr-only">Datum wählen</label>
-      <input id="popup-date-input" type="text" placeholder="YYYY-MM-DD" class="date-input">
-    </div>
-
-    <!-- Monat anzeigen -->
-    <!-- Monat anzeigen mit CSS-Pfeilen -->
-<div class="calendar-header">
-  <div class="month-nav arrow-left" id="prev-month"></div>
-  <div id="calendar-month" class="calendar-month"></div>
-  <div class="month-nav arrow-right" id="next-month"></div>
-</div>
-
-    <!-- Kalender -->
-    <div id="calendar"></div>
-  </div>
-</div>
-
-
-  <!-- Popup JS -->
-<script>
-const dButtonDate = document.getElementById("dButtonDate");
-const popup = document.getElementById("dDaypickerContainer");
-const dateInput = document.getElementById("popup-date-input");
-const calendarMonthEl = document.getElementById('calendar-month');
-const calendarEl = document.getElementById("calendar");
-const prevMonthBtn = document.getElementById('prev-month');
-const nextMonthBtn = document.getElementById('next-month');
-
-// ====== TEXTVERKNÜPFUNG: "Es waren XY Personen am JJJJ-MM-DD unterwegs" ======
-const xyCountEl = document.getElementById('xyCount');
-const xyDateEl = document.getElementById('xyDate');
-
-
-// Funktion: Daten für bestimmtes Datum laden (summiert automatisch alle Werte aus "summe")
-async function fetchPeopleForDate(dateStr) {
-  const url = `./im3_unload.php?from=${dateStr}&to=${dateStr}&limit=5000`;
-  const res = await fetch(url, { headers: { 'Accept': 'application/json' }});
-  if (!res.ok) throw new Error('HTTP ' + res.status);
-
-  const data = await res.json();
-  console.log('Geladene Daten:', data); // 🔍 In der Browser-Konsole prüfen
-
-  // Sicherstellen, dass ein Array zurückkommt
-  if (!Array.isArray(data)) return 0;
-
-  // Alle Werte aus "summe" zusammenzählen
-  const total = data.reduce((acc, row) => {
-    const val = Number(row.summe);
-    return acc + (isNaN(val) ? 0 : val);
-  }, 0);
-
-  return total;
-}
-
-// Funktion: Text im Frontend aktualisieren
-async function updateDateAndCount(dateStr) {
-  xyDateEl.textContent = dateStr;
-  xyCountEl.textContent = '...'; // lädt
-
-  try {
-    const total = await fetchPeopleForDate(dateStr);
-    xyCountEl.textContent = new Intl.NumberFormat('de-CH').format(total);
-  } catch (err) {
-    console.error('Fehler beim Laden:', err);
-    xyCountEl.textContent = '–';
-  }
-}
-
-// Variable für aktuell angezeigten Monat
-let currentCalendarDate = new Date();
-
-// Öffnen / Schließen
-dButtonDate.addEventListener("click", () => popup.style.display = "flex");
-popup.addEventListener("click", e => { if(e.target === popup) popup.style.display = "none"; });
-
-// Kalender erstellen
-function renderCalendar(date = currentCalendarDate) {
-  currentCalendarDate = date; // speichere aktuell angezeigten Monat
-  calendarEl.innerHTML = "";
-  const year = date.getFullYear();
-  const month = date.getMonth();
-
-  // Monatsname setzen
-  const monthNames = ["Januar","Februar","März","April","Mai","Juni",
-                      "Juli","August","September","Oktober","November","Dezember"];
-  calendarMonthEl.textContent = monthNames[month] + ' ' + year;
-
-  // erster Tag des Monats
-  const firstDay = new Date(year, month, 1).getDay();
-  const daysInMonth = new Date(year, month + 1, 0).getDate();
-
-  // leere Felder für Anfang
-  for(let i = 0; i < firstDay; i++) {
-    const empty = document.createElement('div');
-    calendarEl.appendChild(empty);
-  }
-
-  // Tage einfügen
-  for(let d = 1; d <= daysInMonth; d++) {
-    const dayEl = document.createElement('div');
-    dayEl.textContent = d;
-    dayEl.className = 'day';
-    dayEl.addEventListener('click', () => {
-    calendarEl.querySelectorAll('.day').forEach(e => e.classList.remove('selected'));
-    dayEl.classList.add('selected');
-
-   const selectedDate = new Date(year, month, d);
-   const dateStr = selectedDate.toISOString().split('T')[0];
-
-   dateInput.value = dateStr;
-   dButtonDate.querySelector('b').textContent = dateStr;
-   popup.style.display = 'none';
-
-   // ⬇️ Aktualisiere jetzt Text und Personenanzahl
-    updateDateAndCount(dateStr);
-    });
-    calendarEl.appendChild(dayEl);
-  }
-}
-
-prevMonthBtn.addEventListener('click', () => {
-  const newDate = new Date(currentCalendarDate.getFullYear(), currentCalendarDate.getMonth() - 1, 1);
-  renderCalendar(newDate);
-});
-
-nextMonthBtn.addEventListener('click', () => {
-  const newDate = new Date(currentCalendarDate.getFullYear(), currentCalendarDate.getMonth() + 1, 1);
-  renderCalendar(newDate);
-});
-
-// Input klickbar: öffnet Pop-up
-dateInput.addEventListener('click', () => popup.style.display = "flex");
-
-dateInput.addEventListener('change', () => {
-  const parts = dateInput.value.split('-'); // YYYY-MM-DD
-  if(parts.length === 3) {
-    const [y, m, d] = parts.map(Number);
-    if(!isNaN(y) && !isNaN(m) && !isNaN(d)) {
-      const newDate = new Date(y, m - 1, d);
-      renderCalendar(newDate);
-
-      // markiere gewählten Tag
-      const dayElements = calendarEl.querySelectorAll('.day');
-      dayElements.forEach(e => {
-        e.classList.remove('selected');
-        if(Number(e.textContent) === d) e.classList.add('selected');
-      });
-    }
-  }
-});
-
-// Input per Enter aktualisieren
-dateInput.addEventListener('keydown', e => {
-  if(e.key === 'Enter') {
-    const parts = dateInput.value.split('-'); // YYYY-MM-DD
-    if(parts.length === 3) {
-      const [y, m, d] = parts.map(Number);
-      if(!isNaN(y) && !isNaN(m) && !isNaN(d)) {
-        const newDate = new Date(y, m - 1, d);
-        renderCalendar(newDate);
-
-        // markiere gewählten Tag
-        const dayElements = calendarEl.querySelectorAll('.day');
-        dayElements.forEach(el => {
-          el.classList.remove('selected');
-          if(Number(el.textContent) === d) el.classList.add('selected');
-        });
-
-        // Popup optional schließen
-        popup.style.display = 'none';
-
-        // Button-Text aktualisieren
-        dButtonDate.querySelector('b').textContent = dateInput.value;
-      } else {
-        alert('Ungültiges Datum');
-      }
-    } else {
-      alert('Datum muss das Format YYYY-MM-DD haben');
-    }
-  }
-});
-
-// Zeigt beim Laden der Seite automatisch die heutigen Daten an
-document.addEventListener('DOMContentLoaded', () => {
-  const today = new Date().toISOString().split('T')[0]; // z. B. 2025-10-14
-  updateDateAndCount(today);
-});
-</script>
-
-  <!-- Ball-Logik + Tageszähler -->
+  <!-- ======= JS: Gemeinsame Hilfen ======= -->
   <script>
-  (function () {
-    // === Einstellungen ===
-    const ENDPOINT = './im3_unload.php';   // gleicher Ordner
-    const PEOPLE_PER_BALL = 5;             // 1 Ball = 5 Personen (Performance)
-    const KYBUN_CAPACITY = 19794;          // Stadionkapazität
-    const REFRESH_MS = 5 * 60 * 1000;      // alle 5 Minuten
+    const ENDPOINT = './im3_unload.php'; // JSON-Endpoint
+    const KYBUN_CAPACITY = 19794;
 
-    const ballsLayer   = document.getElementById('balls-layer');
-    const peopleEl     = document.getElementById('people-count');
-    const percentEl    = document.getElementById('percent-kybun');
+    // 1 Ball = X Personen (Performance-Steuerung)
+    const PEOPLE_PER_BALL_TODAY = 5;   // Hero (heute)
+    const PEOPLE_PER_BALL_DATE  = 5;   // gewähltes Datum (unten)
 
-    let currentBalls = 0;
+    // DOM Refs
+    const ballsLayerToday = document.getElementById('balls-layer');
+    const ballsLayerDate  = document.getElementById('balls-layer-date');
+    const peopleEl        = document.getElementById('people-count');
+    const percentEl       = document.getElementById('percent-kybun');
 
-    function isoDate(d) {
-      const y = d.getFullYear();
-      const m = String(d.getMonth()+1).padStart(2,'0');
-      const day = String(d.getDate()).padStart(2,'0');
-      return `${y}-${m}-${day}`;
+    const dButtonDate     = document.getElementById("dButtonDate");
+    const popup           = document.getElementById("dDaypickerContainer");
+    const dateInput       = document.getElementById("popup-date-input");
+    const calendarMonthEl = document.getElementById('calendar-month');
+    const calendarEl      = document.getElementById("calendar");
+    const prevMonthBtn    = document.getElementById('prev-month');
+    const nextMonthBtn    = document.getElementById('next-month');
+
+    const xyCountEl = document.getElementById('xyCount');
+    const xyDateEl  = document.getElementById('xyDate');
+
+    // --- Datumshilfen ---
+    function formatLocalYMD(date) {
+      const y = date.getFullYear();
+      const m = String(date.getMonth() + 1).padStart(2, '0');
+      const d = String(date.getDate()).padStart(2, '0');
+      return `${y}-${m}-${d}`;
+    }
+    function addDaysYMD(ymd, days) {
+      const [y, m, d] = ymd.split('-').map(Number);
+      const dt = new Date(y, m - 1, d);
+      dt.setDate(dt.getDate() + days);
+      return formatLocalYMD(dt);
     }
     function todayRange() {
       const now = new Date();
       const start = new Date(now.getFullYear(), now.getMonth(), now.getDate());
       const end = new Date(start.getTime() + 24*60*60*1000);
-      return { from: isoDate(start), to: isoDate(end) };
-    }
-    async function fetchToday() {
-      const {from, to} = todayRange();
-      const url = `${ENDPOINT}?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}&limit=5000`;
-      const res = await fetch(url, { headers: { 'Accept': 'application/json' }});
-      if (!res.ok) throw new Error('HTTP ' + res.status);
-      return res.json();
+      return { from: formatLocalYMD(start), to: formatLocalYMD(end) };
     }
 
+    // --- Daten laden (summiert "summe") ---
+    async function fetchTotal(from, to) {
+      const url = `${ENDPOINT}?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}&limit=5000`;
+      const res = await fetch(url, { headers: { 'Accept': 'application/json' }});
+      if(!res.ok) throw new Error('HTTP ' + res.status);
+      const data = await res.json();
+      const rows = Array.isArray(data) ? data : (Array.isArray(data?.rows) ? data.rows : []);
+      return rows.reduce((acc, r) => acc + (parseInt(r.summe, 10) || 0), 0);
+    }
+
+    // --- Ball-Rendering ---
     function randomInBox(width, height, pad=10) {
       const x = Math.random() * (width  - pad*2) + pad;
       const y = Math.random() * (height - pad*2) + pad;
       return { x, y };
     }
 
-    function addBalls(n) {
-      const rect = ballsLayer.getBoundingClientRect();
+    function addBallsToLayer(layerEl, count) {
+      const rect = layerEl.getBoundingClientRect();
       const w = rect.width, h = rect.height;
 
-      for (let i = 0; i < n; i++) {
+      for (let i=0; i<count; i++) {
         const el = document.createElement('div');
         el.className = 'ball';
-
         const p0 = randomInBox(w, h, 12);
         const p1 = randomInBox(w, h, 12);
-
         el.style.setProperty('--x0', `${p0.x}px`);
         el.style.setProperty('--y0', `${p0.y}px`);
         el.style.setProperty('--x1', `${p1.x}px`);
         el.style.setProperty('--y1', `${p1.y}px`);
 
-        const dur = 6 + Math.random()*10;       // 6–16s
-        const delay = Math.random() * -dur;     // verteilt Starts
+        const dur = 6 + Math.random()*10;   // 6–16s
+        const delay = Math.random()*-dur;   // verteilen
         el.style.animationDuration = `${dur}s`;
         el.style.animationDelay    = `${delay}s`;
 
-        ballsLayer.appendChild(el);
+        layerEl.appendChild(el);
       }
-      currentBalls += n;
+    }
+    function resetLayer(layerEl) {
+      layerEl.innerHTML = '';
     }
 
-    function resetBalls() {
-      ballsLayer.innerHTML = '';
-      currentBalls = 0;
-    }
-
-    function updateCounters(total) {
-      peopleEl.textContent  = new Intl.NumberFormat('de-CH').format(total) + ' PERSONEN';
-      const pct = (total / KYBUN_CAPACITY) * 100;
-      percentEl.textContent = (isFinite(pct) ? pct.toFixed(1) : '0.0') + '%';
-    }
-
-    async function refresh() {
+    // --- HEUTE (Hero) ---
+    let currentBallsToday = 0;
+    async function refreshToday() {
       try {
-        const data = await fetchToday(); // erwartet Array von Rows mit "summe"
-        const total = Array.isArray(data)
-          ? data.reduce((acc, r) => acc + (parseInt(r.summe, 10) || 0), 0)
-          : 0;
+        const { from, to } = todayRange();
+        const total = await fetchTotal(from, to);
+        const wanted = Math.floor(total / PEOPLE_PER_BALL_TODAY);
 
-        const wanted = Math.floor(total / PEOPLE_PER_BALL);
+        if (wanted < currentBallsToday) { // Mitternacht o.ä.
+          resetLayer(ballsLayerToday);
+          currentBallsToday = 0;
+        }
+        const diff = wanted - currentBallsToday;
+        if (diff > 0) {
+          addBallsToLayer(ballsLayerToday, diff);
+          currentBallsToday += diff;
+        }
 
-        // Mitternacht oder geringere Zahl -> komplett neu
-        if (wanted < currentBalls) resetBalls();
-
-        const diff = wanted - currentBalls;
-        if (diff > 0) addBalls(diff);
-
-        updateCounters(total);
+        // Zähler
+        peopleEl.textContent = new Intl.NumberFormat('de-CH').format(total) + ' PERSONEN';
+        const pct = (total / KYBUN_CAPACITY) * 100;
+        percentEl.textContent = (isFinite(pct) ? pct.toFixed(1) : '0.0') + '%';
       } catch (err) {
-        console.error('Update fehlgeschlagen:', err);
+        console.error('Heute-Update fehlgeschlagen:', err);
       }
     }
 
-    window.addEventListener('load', refresh);
-    setInterval(refresh, REFRESH_MS);
-  })();
+    // --- GEWÄHLTES DATUM (unten links + Text) ---
+    let currentBallsDate = 0;
+    async function updateDateAndCount(dateStr) {
+      xyDateEl.textContent = dateStr;
+      xyCountEl.textContent = '...';
+
+      try {
+        const from = dateStr;
+        const to   = addDaysYMD(dateStr, 1);
+        const total = await fetchTotal(from, to);
+
+        // Text
+        xyCountEl.textContent = new Intl.NumberFormat('de-CH').format(total);
+
+        // Bälle: neu aufbauen (Datum wechselte => kein Delta nötig)
+        resetLayer(ballsLayerDate);
+        currentBallsDate = 0;
+        const wanted = Math.floor(total / PEOPLE_PER_BALL_DATE);
+        if (wanted > 0) {
+          addBallsToLayer(ballsLayerDate, wanted);
+          currentBallsDate = wanted;
+        }
+      } catch (err) {
+        console.error('Datum-Update fehlgeschlagen:', err);
+        xyCountEl.textContent = '–';
+      }
+    }
+
+    // --- DATE PICKER LOGIK ---
+    let currentCalendarDate = new Date();
+
+    dButtonDate.addEventListener("click", () => popup.style.display = "flex");
+    popup.addEventListener("click", e => { if(e.target === popup) popup.style.display = "none"; });
+
+    function renderCalendar(date = currentCalendarDate) {
+      currentCalendarDate = date;
+      calendarEl.innerHTML = "";
+      const year = date.getFullYear();
+      const month = date.getMonth();
+
+      const monthNames = ["Januar","Februar","März","April","Mai","Juni","Juli","August","September","Oktober","November","Dezember"];
+      calendarMonthEl.textContent = monthNames[month] + ' ' + year;
+
+      // Wochentag des 1. (0=So ... 6=Sa) -> wir wollen Mo-Start
+      const firstDay = (new Date(year, month, 1).getDay() + 6) % 7; // Montag=0
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+      for (let i=0; i<firstDay; i++) {
+        const empty = document.createElement('div');
+        calendarEl.appendChild(empty);
+      }
+
+      for (let d=1; d<=daysInMonth; d++) {
+        const dayEl = document.createElement('div');
+        dayEl.textContent = d;
+        dayEl.className = 'day';
+        dayEl.addEventListener('click', () => {
+          calendarEl.querySelectorAll('.day').forEach(e => e.classList.remove('selected'));
+          dayEl.classList.add('selected');
+
+          const selectedDate = new Date(year, month, d);
+          const dateStr = formatLocalYMD(selectedDate);
+
+          dateInput.value = dateStr;
+          dButtonDate.querySelector('b').textContent = dateStr;
+          popup.style.display = 'none';
+
+          updateDateAndCount(dateStr);
+        });
+        calendarEl.appendChild(dayEl);
+      }
+    }
+
+    prevMonthBtn.addEventListener('click', () => {
+      renderCalendar(new Date(currentCalendarDate.getFullYear(), currentCalendarDate.getMonth() - 1, 1));
+    });
+    nextMonthBtn.addEventListener('click', () => {
+      renderCalendar(new Date(currentCalendarDate.getFullYear(), currentCalendarDate.getMonth() + 1, 1));
+    });
+
+    dateInput.addEventListener('click', () => popup.style.display = "flex");
+    dateInput.addEventListener('keydown', e => {
+      if (e.key === 'Enter') {
+        const parts = dateInput.value.split('-'); // YYYY-MM-DD
+        if (parts.length === 3) {
+          const [y,m,d] = parts.map(Number);
+          if (!isNaN(y) && !isNaN(m) && !isNaN(d)) {
+            const newDate = new Date(y, m-1, d);
+            renderCalendar(newDate);
+
+            const selectedYMD = formatLocalYMD(newDate);
+            // markiere im Grid (grob)
+            calendarEl.querySelectorAll('.day').forEach(el => {
+              el.classList.toggle('selected', Number(el.textContent) === d);
+            });
+
+            popup.style.display = 'none';
+            dButtonDate.querySelector('b').textContent = selectedYMD;
+            updateDateAndCount(selectedYMD);
+          } else {
+            alert('Ungültiges Datum');
+          }
+        } else {
+          alert('Datum muss das Format YYYY-MM-DD haben');
+        }
+      }
+    });
+
+    // Initial: heute laden (oben & unten)
+    document.addEventListener('DOMContentLoaded', () => {
+      renderCalendar(new Date());
+      const today = formatLocalYMD(new Date());
+      dButtonDate.querySelector('b').textContent = today;
+      updateDateAndCount(today);
+      refreshToday();
+      // Hero zyklisch aktualisieren (heute)
+      setInterval(refreshToday, 5 * 60 * 1000);
+    });
   </script>
 
 </body>

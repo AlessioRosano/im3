@@ -51,7 +51,7 @@ body {
   opacity: .95;
 }
 
-/* ====== Grafikbereich ====== */
+/* ====== Grafikbereich (Hero) ====== */
 .d-grafik-hero {
   width: 640px;
   max-width: 100%;
@@ -62,52 +62,43 @@ body {
   text-align: center;
 }
 
-/* Spielfeld + Bälle */
+/* Spielfeld + Ball-Overlay (Hero + Datum nutzen identische Styles) */
 .field-wrap {
   position: relative;
   width: 100%;
   max-width: 640px;
-  aspect-ratio: 16 / 9;     /* passt für die meisten Feldgrafiken */
+  aspect-ratio: 16 / 9;
   border-radius: 16px;
   overflow: hidden;
 }
 
-.field-image {
+.field-image,
+.d-grafik-daypicker-icon img.daypicker-image {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: contain;   /* <--- hier ändern */
-  object-position: center; /* zentriert das Bild */
+  object-fit: contain;
+  object-position: center;
   display: block;
 }
 
-.balls-layer {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;     /* verhindert Klicks auf Bälle */
-}
-
-/* Begrenze den Bereich, in dem sich die Bälle bewegen dürfen */
+/* Ein Layer für animierte Bälle – wird in beiden Bereichen verwendet */
 .balls-layer {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  /* ClipPath auf die Spielfeldfläche */
+  /* Maske, damit Bälle auf dem Rasen bleiben (an Bild/Design anpassen) */
   clip-path: polygon(30% 34%, 70% 34%, 70% 76%, 30% 76%);
   overflow: hidden;
 }
 
-.balls-layer {
-  background: none /* rgba(255, 0, 0, 0.3);halbtransparentes Rot zum Testen */
-}
-
-/* Ein Ball */
+/* Ein einzelner Ball */
 .ball {
   position: absolute;
   width: 16px;
   height: 16px;
-  background-image: url('./ball.png');   /* liegt neben der PHP */
+  background-image: url('./ball.png');
   background-position: center;
   background-repeat: no-repeat;
   background-size: contain;
@@ -126,20 +117,19 @@ body {
   100% { transform: translate(var(--x0), var(--y0)); }
 }
 
-/* Zähler */
+/* Zähler (Hero) */
 .personen-parent {
   display: flex;
   align-items: baseline;
   gap: 28px;
 }
-
 .personen {
   font-size: 40px;
   font-weight: 500;
-  font-variant-numeric: tabular-nums;  /* schöne, feste Ziffernbreite */
+  font-variant-numeric: tabular-nums;
 }
 
-/* ====== Datum/Text-Bereich (dezent) ====== */
+/* ====== Datumsbereich ====== */
 .d-passantenanzahl-datum {
   padding: 64px 24px 96px;
   background: var(--green);
@@ -153,20 +143,13 @@ body {
   align-items: center;
 }
 
+/* Linke Grafik-Box im Datumsbereich */
 .d-grafik-daypicker-icon {
   width: 624px;
   height: 429px;
   border-radius: 12px;
   overflow: hidden;
   position: relative;
-}
-
-.d-grafik-daypicker-icon img.daypicker-image {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
 }
 
 .d-text-daypicker {
@@ -207,7 +190,6 @@ body {
 .es-waren-xy-personen-am-jjjj-m-wrapper {
   font-size: 18px;
 }
-
 .es-waren-xy-container {
   width: 620px;
 }
@@ -233,7 +215,6 @@ body {
 }
 
 /* ====== Popup ====== */
-/* Popup Overlay */
 .popup-overlay {
   display: none;
   position: fixed;
@@ -245,7 +226,6 @@ body {
   padding: 16px;
 }
 
-/* Pop-up Box */
 .d-daypicker {
   background: #ACABAB;
   border-radius: 16px;
@@ -258,7 +238,7 @@ body {
   width: 100%;
 }
 
-/* Kalender Styling */
+/* Kalender */
 .calendar-month {
   font-size: 18px;
   font-weight: 500;
@@ -278,17 +258,15 @@ body {
   cursor: pointer;
   border-radius: 8px;
 }
-
 #calendar .day:hover {
   background-color: #ddd;
 }
-
 #calendar .selected {
   background-color: #1a482b;
   color: #fff;
 }
 
-/* Input Styling */
+/* Input */
 .date-input {
   width: 100%;
   padding: 10px 12px;
@@ -299,7 +277,7 @@ body {
   cursor: pointer;
 }
 
-/* Label für Screenreader */
+/* Screenreader Only */
 .sr-only {
   position: absolute;
   width: 1px;
@@ -312,30 +290,13 @@ body {
   border: 0;
 }
 
-/*monats anzeige */
+/* Monats-Navigation */
 .calendar-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   margin: 12px 0;
 }
-
-.month-nav {
-  width: 24px;
-  height: 24px;
-  cursor: pointer;
-}
-
-.calendar-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 12px;
-}
-
-/* ====== Pfeile ====== */
-
-/* Pfeile Basis */
 .month-nav {
   width: 24px;
   height: 24px;
@@ -343,7 +304,7 @@ body {
   position: relative;
 }
 
-/* Linker Pfeil */
+/* Pfeile */
 .arrow-left::before {
   content: "";
   display: block;
@@ -351,14 +312,11 @@ body {
   height: 10px;
   border-left: 3px solid #fff;
   border-bottom: 3px solid #fff;
-  transform: rotate(45deg);
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%) rotate(45deg);
 }
-
-/* Rechter Pfeil */
 .arrow-right::before {
   content: "";
   display: block;
@@ -378,7 +336,9 @@ body {
   .d-text-hero { width: 100%; }
   .d-grafik-hero { width: 100%; }
   .features { flex-direction: column; }
-  .d-grafik-daypicker-icon, .d-text-daypicker, .d-home-wie-viele-personen, .d-button-date, .es-waren-xy-container {
-    width: 100%;
-  }
+  .d-grafik-daypicker-icon,
+  .d-text-daypicker,
+  .d-home-wie-viele-personen,
+  .d-button-date,
+  .es-waren-xy-container { width: 100%; }
 }
