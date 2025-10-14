@@ -82,44 +82,50 @@ body {
   display: block;
 }
 
-/* ====== Ball-Overlays ====== */
-/* HERO oben: Bild kybunpark.png (mit Tribünen). Insets so gewählt,
-   dass nur das innere Spielfeld bleibt. Feintuning möglich (4 Werte = top right bottom left) */
-#balls-layer-oben {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  clip-path: inset(16% 13% 18% 13%);  /* <-- ggfs. 1–2% nachjustieren */
-  overflow: hidden;
-}
-
-/* DATUM unten: Bild fussballfeld.png (reines Feld). */
+/* ====== Ball-Overlays HERO & DATUM ====== */
+#balls-layer-oben,
 #balls-layer-unten {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  clip-path: inset(7% 6% 9% 7%);      /* <-- ggfs. 1–2% nachjustieren */
   overflow: hidden;
 }
 
-/* Ein einzelner Ball */
+/* HERO oben (kybunpark) */
+#balls-layer-oben {
+  clip-path: inset(34% 30% 24% 30%);
+  background: rgba(246, 6, 6, 0.2);
+}
+
+/* DATUM unten (fussballfeld) */
+#balls-layer-unten {
+  clip-path: inset(13% 6% 11% 6%);
+  background: rgba(246, 6, 6, 0.2);
+}
+
+/* ====== Ein einzelner Ball ====== */
 .ball {
   position: absolute;
   width: 16px;
   height: 16px;
-  background-image: url('./ball.png');  /* liegt neben der PHP */
+  background-image: url('./ball.png'); /* Pfad anpassen, falls nötig */
   background-position: center;
   background-repeat: no-repeat;
   background-size: contain;
   will-change: transform;
-  animation-name: drift;
-  animation-timing-function: ease-in-out;
-  animation-iteration-count: infinite;
+  animation: drift 6s ease-in-out infinite;
   transform: translate(var(--x0, 0), var(--y0, 0));
   opacity: 0.95;
 }
 
-/* Drift-Animation (hin & zurück zwischen Start/Ziel) */
+.ball {
+  --x0: 30%;  /* linker Rand des Clip-Pfads */
+  --y0: 34%;  /* oberer Rand des Clip-Pfads */
+  --x1: 70%;  /* rechter Rand des Clip-Pfads */
+  --y1: 76%;  /* unterer Rand des Clip-Pfads */
+}
+
+/* ====== Drift-Animation (hin & zurück) ====== */
 @keyframes drift {
   0%   { transform: translate(var(--x0), var(--y0)); }
   50%  { transform: translate(var(--x1), var(--y1)); }
@@ -316,7 +322,19 @@ body {
   .d-home-wie-viele-personen,
   .d-button-date,
   .es-waren-xy-container { width: 100%; max-width: 720px; }
+
+  #balls-layer-oben  { clip-path: inset(34% 30% 24% 30%); }
+  #balls-layer-unten { clip-path: inset(13% 6% 11% 6%); }
+
+  .ball {
+  --x0: 30%;  /* linker Rand des Clip-Pfads */
+  --y0: 34%;  /* oberer Rand des Clip-Pfads */
+  --x1: 70%;  /* rechter Rand des Clip-Pfads */
+  --y1: 76%;  /* unterer Rand des Clip-Pfads */
 }
+}
+
+
 
 @media (max-width: 720px) {
   .d-hero { padding: 32px 16px; gap: 24px; }
@@ -330,9 +348,15 @@ body {
   .d-home-wie-viele-personen { font-size: 20px; width: 100%; }
   .es-waren-xy-personen-am-jjjj-m-wrapper { font-size: 18px; }
 
-  /* etwas engerer Masken-Offset auf sehr kleinen Screens */
-  #balls-layer-oben  { clip-path: inset(17% 14% 19% 14%); }
-  #balls-layer-unten { clip-path: inset(8% 7% 10% 7%); }
+  #balls-layer-oben  { clip-path: inset(33% 30% 24% 30%); }
+  #balls-layer-unten { clip-path: inset(13% 6% 11% 6%); }
+
+  .ball {
+  --x0: 30%;  /* linker Rand des Clip-Pfads */
+  --y0: 34%;  /* oberer Rand des Clip-Pfads */
+  --x1: 70%;  /* rechter Rand des Clip-Pfads */
+  --y1: 76%;  /* unterer Rand des Clip-Pfads */
+}
 }
 
 /* Optional: weniger Bewegung, wenn Nutzer*innen das wünschen */
