@@ -57,7 +57,7 @@
             </div>
             <div class="es-waren-xy-personen-am-jjjj-m-wrapper">
               <div class="es-waren-xy-container">
-                <span>Es waren </span><b>XY</b><span> Personen am </span><b>JJJJ-MM-DD</b><span> unterwegs.</span>
+              <span>Es waren </span><b id="xyCount">XY</b><span> Personen am </span><b id="xyDate">JJJJ-MM-DD</b><span> unterwegs.</span>
               </div>
             </div>
           </div>
@@ -108,6 +108,46 @@ const calendarEl = document.getElementById("calendar");
 const prevMonthBtn = document.getElementById('prev-month');
 const nextMonthBtn = document.getElementById('next-month');
 
+// ====== TEXTVERKNÜPFUNG: "Es waren XY Personen am JJJJ-MM-DD unterwegs" ======
+const xyCountEl = document.getElementById('xyCount');
+const xyDateEl = document.getElementById('xyDate');
+
+
+// Funktion: Daten für bestimmtes Datum laden (summiert automatisch alle Werte aus "summe")
+async function fetchPeopleForDate(dateStr) {
+  const url = `./im3_unload.php?from=${dateStr}&to=${dateStr}&limit=5000`;
+  const res = await fetch(url, { headers: { 'Accept': 'application/json' }});
+  if (!res.ok) throw new Error('HTTP ' + res.status);
+
+  const data = await res.json();
+  console.log('Geladene Daten:', data); // 🔍 In der Browser-Konsole prüfen
+
+  // Sicherstellen, dass ein Array zurückkommt
+  if (!Array.isArray(data)) return 0;
+
+  // Alle Werte aus "summe" zusammenzählen
+  const total = data.reduce((acc, row) => {
+    const val = Number(row.summe);
+    return acc + (isNaN(val) ? 0 : val);
+  }, 0);
+
+  return total;
+}
+
+// Funktion: Text im Frontend aktualisieren
+async function updateDateAndCount(dateStr) {
+  xyDateEl.textContent = dateStr;
+  xyCountEl.textContent = '...'; // lädt
+
+  try {
+    const total = await fetchPeopleForDate(dateStr);
+    xyCountEl.textContent = new Intl.NumberFormat('de-CH').format(total);
+  } catch (err) {
+    console.error('Fehler beim Laden:', err);
+    xyCountEl.textContent = '–';
+  }
+}
+
 // Variable für aktuell angezeigten Monat
 let currentCalendarDate = new Date();
 
@@ -143,13 +183,18 @@ function renderCalendar(date = currentCalendarDate) {
     dayEl.textContent = d;
     dayEl.className = 'day';
     dayEl.addEventListener('click', () => {
-      calendarEl.querySelectorAll('.day').forEach(e => e.classList.remove('selected'));
-      dayEl.classList.add('selected');
+    calendarEl.querySelectorAll('.day').forEach(e => e.classList.remove('selected'));
+    dayEl.classList.add('selected');
 
-      const selectedDate = new Date(year, month, d);
-      dateInput.value = selectedDate.toISOString().split('T')[0];
-      popup.style.display = 'none';
-      dButtonDate.querySelector('b').textContent = dateInput.value;
+   const selectedDate = new Date(year, month, d);
+   const dateStr = selectedDate.toISOString().split('T')[0];
+
+   dateInput.value = dateStr;
+   dButtonDate.querySelector('b').textContent = dateStr;
+   popup.style.display = 'none';
+
+   // ⬇️ Aktualisiere jetzt Text und Personenanzahl
+    updateDateAndCount(dateStr);
     });
     calendarEl.appendChild(dayEl);
   }
@@ -217,6 +262,11 @@ dateInput.addEventListener('keydown', e => {
   }
 });
 
+// Zeigt beim Laden der Seite automatisch die heutigen Daten an
+document.addEventListener('DOMContentLoaded', () => {
+  const today = new Date().toISOString().split('T')[0]; // z. B. 2025-10-14
+  updateDateAndCount(today);
+});
 </script>
 
   <!-- Ball-Logik + Tageszähler -->
