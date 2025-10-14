@@ -84,14 +84,27 @@ body {
 }
 
 /* Ein Layer für animierte Bälle – wird in beiden Bereichen verwendet */
-.balls-layer {
+/* Hero oben */
+.balls-layer-oben {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  /* Maske, damit Bälle auf dem Rasen bleiben (an Bild/Design anpassen) */
-  clip-path: polygon(30% 34%, 70% 34%, 70% 76%, 30% 76%);
+  clip-path: polygon(30% 34%, 70% 34%, 70% 76%, 30% 76%); /* Passe an das große Spielfeld an */
   overflow: hidden;
+  background: none
 }
+
+/* Datum unten */
+.balls-layer-unten {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  clip-path: polygon(21% 13%, 78% 13%, 78% 89%, 21% 89%); /* Passe an das kleine Spielfeld an */
+  overflow: hidden;
+  background: rgba(246, 6, 6, 0.2)
+}
+
+
 
 /* Ein einzelner Ball */
 .ball {
@@ -120,14 +133,17 @@ body {
 /* Zähler (Hero) */
 .personen-parent {
   display: flex;
-  align-items: baseline;
-  gap: 28px;
+  flex-direction: column; /* untereinander */
+  align-items: flex-start; /* linksbündig */
+  gap: 8px; /* Abstand zwischen den Zeilen */
 }
 .personen {
   font-size: 40px;
   font-weight: 500;
   font-variant-numeric: tabular-nums;
 }
+
+
 
 /* ====== Datumsbereich ====== */
 .d-passantenanzahl-datum {
@@ -150,6 +166,10 @@ body {
   border-radius: 12px;
   overflow: hidden;
   position: relative;
+}
+
+.balls-layer {
+  background: rgba(255, 0, 0, 0.3); /* halbtransparentes Rot zum Testen */
 }
 
 .d-text-daypicker {
@@ -330,13 +350,36 @@ body {
   transform: translate(-50%, -50%) rotate(45deg);
 }
 
+/* ====== Hero-Feld fixieren ====== */
+.d-grafik-hero {
+  width: 640px;       /* feste Breite */
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  text-align: center;
+  max-width: none;    /* unbedingt entfernen, dass es schrumpft */
+}
+
+.d-grafik-hero .field-wrap {
+  width: 640px;       /* feste Breite */
+  height: 360px;      /* feste Höhe */
+  max-width: none;
+  aspect-ratio: unset; /* Aspect Ratio entfernen */
+}
+
+.d-grafik-daypicker-icon {
+  width: 624px;       /* feste Breite */
+  height: 429px;      /* feste Höhe */
+  max-width: none;
+}
+
 /* ====== Responsive ====== */
 @media (max-width: 1100px) {
   .d-hero { flex-direction: column; text-align: left; }
   .d-text-hero { width: 100%; }
-  .d-grafik-hero { width: 100%; }
+  /* .d-grafik-hero { width: 100%; }  <-- löschen */
   .features { flex-direction: column; }
-  .d-grafik-daypicker-icon,
+  /* .d-grafik-daypicker-icon { width: 100%; } <-- löschen */
   .d-text-daypicker,
   .d-home-wie-viele-personen,
   .d-button-date,

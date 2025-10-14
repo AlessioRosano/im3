@@ -27,7 +27,7 @@
       <div class="d-grafik-hero">
         <div class="field-wrap">
           <img src="./kybunpark.png" alt="Fussballfeld Kybunpark" class="field-image" />
-          <div id="balls-layer" class="balls-layer" aria-live="polite"></div>
+          <div id="balls-layer-oben" class="balls-layer-oben" aria-live="polite"></div>
         </div>
 
         <div class="personen-parent">
@@ -42,7 +42,7 @@
       <div class="features">
         <div class="d-grafik-daypicker-icon">
           <img src="./fussballfeld.png" alt="Fussballfeld" class="daypicker-image">
-          <div id="balls-layer-date" class="balls-layer" aria-live="polite"></div>
+          <div id="balls-layer-unten" class="balls-layer-unten" aria-live="polite"></div>
         </div>
 
         <div class="d-text-daypicker">
@@ -103,8 +103,8 @@
     const PEOPLE_PER_BALL_DATE  = 5;   // gewähltes Datum (unten)
 
     // DOM Refs
-    const ballsLayerToday = document.getElementById('balls-layer');
-    const ballsLayerDate  = document.getElementById('balls-layer-date');
+    const ballsLayerToday = document.getElementById('balls-layer-oben'); // Hero oben
+    const ballsLayerDate  = document.getElementById('balls-layer-unten'); // Datum unten
     const peopleEl        = document.getElementById('people-count');
     const percentEl       = document.getElementById('percent-kybun');
 
@@ -203,7 +203,7 @@
         // Zähler
         peopleEl.textContent = new Intl.NumberFormat('de-CH').format(total) + ' PERSONEN';
         const pct = (total / KYBUN_CAPACITY) * 100;
-        percentEl.textContent = (isFinite(pct) ? pct.toFixed(1) : '0.0') + '%';
+        percentEl.textContent = (isFinite(pct) ? pct.toFixed(1) : '0.0') + '% STADIONAUSLASTUNG';
       } catch (err) {
         console.error('Heute-Update fehlgeschlagen:', err);
       }
