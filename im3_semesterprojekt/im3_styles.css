@@ -1,4 +1,4 @@
-/* ====== Grundlayout ====== */
+/* ====== Grundfarben & Reset ====== */
 :root{
   --green: #1a482b;
   --white: #ffffff;
@@ -14,6 +14,7 @@ body {
   font-family: "DM Sans", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
 }
 
+/* ====== Layout ====== */
 .d-home {
   width: 100%;
   min-height: 100%;
@@ -21,7 +22,7 @@ body {
   flex-direction: column;
 }
 
-/* ====== Hero ====== */
+/* ====== HERO ====== */
 .d-hero {
   display: flex;
   align-items: center;
@@ -53,7 +54,7 @@ body {
 
 /* ====== Grafikbereich (Hero) ====== */
 .d-grafik-hero {
-  width: 640px;
+  width: 640px;              /* feste Obergrenze auf Desktop */
   max-width: 100%;
   display: flex;
   flex-direction: column;
@@ -62,56 +63,51 @@ body {
   text-align: center;
 }
 
-/* Spielfeld + Ball-Overlay (Hero + Datum nutzen identische Styles) */
+/* Spielfeld + Overlay (Hero & Datum nutzen die gleichen Basen) */
 .field-wrap {
   position: relative;
   width: 100%;
-  max-width: 640px;
-  aspect-ratio: 16 / 9;
+  aspect-ratio: 16 / 9;      /* hält das Verhältnis, ohne zu beschneiden */
   border-radius: 16px;
-  overflow: hidden;
+  overflow: hidden;          /* schneidet Kinder zuverlässig */
 }
 
-.field-image,
-.d-grafik-daypicker-icon img.daypicker-image {
+.field-image {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  object-fit: contain;       /* nie beschneiden */
   object-position: center;
   display: block;
 }
 
-/* Ein Layer für animierte Bälle – wird in beiden Bereichen verwendet */
-/* Hero oben */
-.balls-layer-oben {
+/* ====== Ball-Overlays ====== */
+/* HERO oben: Bild kybunpark.png (mit Tribünen). Insets so gewählt,
+   dass nur das innere Spielfeld bleibt. Feintuning möglich (4 Werte = top right bottom left) */
+#balls-layer-oben {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  clip-path: polygon(30% 34%, 70% 34%, 70% 76%, 30% 76%); /* Passe an das große Spielfeld an */
+  clip-path: inset(16% 13% 18% 13%);  /* <-- ggfs. 1–2% nachjustieren */
   overflow: hidden;
-  background: none
 }
 
-/* Datum unten */
-.balls-layer-unten {
+/* DATUM unten: Bild fussballfeld.png (reines Feld). */
+#balls-layer-unten {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  clip-path: polygon(21% 13%, 78% 13%, 78% 89%, 21% 89%); /* Passe an das kleine Spielfeld an */
+  clip-path: inset(7% 6% 9% 7%);      /* <-- ggfs. 1–2% nachjustieren */
   overflow: hidden;
-  background: rgba(246, 6, 6, 0.2)
 }
-
-
 
 /* Ein einzelner Ball */
 .ball {
   position: absolute;
   width: 16px;
   height: 16px;
-  background-image: url('./ball.png');
+  background-image: url('./ball.png');  /* liegt neben der PHP */
   background-position: center;
   background-repeat: no-repeat;
   background-size: contain;
@@ -123,7 +119,7 @@ body {
   opacity: 0.95;
 }
 
-/* Von Start- zu Zielposition und zurück */
+/* Drift-Animation (hin & zurück zwischen Start/Ziel) */
 @keyframes drift {
   0%   { transform: translate(var(--x0), var(--y0)); }
   50%  { transform: translate(var(--x1), var(--y1)); }
@@ -133,9 +129,9 @@ body {
 /* Zähler (Hero) */
 .personen-parent {
   display: flex;
-  flex-direction: column; /* untereinander */
-  align-items: flex-start; /* linksbündig */
-  gap: 8px; /* Abstand zwischen den Zeilen */
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
 }
 .personen {
   font-size: 40px;
@@ -143,9 +139,7 @@ body {
   font-variant-numeric: tabular-nums;
 }
 
-
-
-/* ====== Datumsbereich ====== */
+/* ====== DATUMSBEREICH ====== */
 .d-passantenanzahl-datum {
   padding: 64px 24px 96px;
   background: var(--green);
@@ -159,19 +153,24 @@ body {
   align-items: center;
 }
 
-/* Linke Grafik-Box im Datumsbereich */
+/* Linke Grafik-Box im Datumsbereich (Bild + Overlay) */
 .d-grafik-daypicker-icon {
   width: 624px;
-  height: 429px;
+  aspect-ratio: 624 / 429;
   border-radius: 12px;
   overflow: hidden;
   position: relative;
 }
 
-.balls-layer {
-  background: rgba(255, 0, 0, 0.3); /* halbtransparentes Rot zum Testen */
+.d-grafik-daypicker-icon .daypicker-image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 
+/* Rechte Text-Box im Datumsbereich */
 .d-text-daypicker {
   width: 620px;
   display: flex;
@@ -182,37 +181,31 @@ body {
 .d-home-wie-viele-personen {
   width: 510px;
   font-weight: 500;
+  font-size: 28px;
 }
 
-.d-home-frame {
-  font-size: 16px;
-  color: #000;
-}
+.d-home-frame { font-size: 16px; color: #000; }
 
 .d-button-date {
   width: 555px;
-  height: 48px;
+  height: 56px;
   border-radius: 32px;
   background: var(--white);
   border: 1px solid var(--green);
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 4px 32px;
+  padding: 0 24px;
   cursor: pointer;
+  color: #555;
+  font-size: 22px;
+  font-weight: 600;
 }
 
-.jjjj-mm-dd {
-  line-height: 150%;
-  opacity: .6;
-}
+.jjjj-mm-dd { line-height: 1; opacity: .6; }
 
-.es-waren-xy-personen-am-jjjj-m-wrapper {
-  font-size: 18px;
-}
-.es-waren-xy-container {
-  width: 620px;
-}
+.es-waren-xy-personen-am-jjjj-m-wrapper { font-size: 22px; }
+.es-waren-xy-container { width: 620px; }
 
 /* ====== Footer ====== */
 .d-footer {
@@ -222,19 +215,15 @@ body {
   display: grid;
   gap: 20px;
 }
-
 .d-line-footer {
   width: 760px;
   height: 3px;
   margin: 0 auto;
   border-top: 3px solid var(--white);
 }
+.copywright-2025-sarina-container p { margin: 0; }
 
-.copywright-2025-sarina-container p {
-  margin: 0;
-}
-
-/* ====== Popup ====== */
+/* ====== Popup (Date Picker) ====== */
 .popup-overlay {
   display: none;
   position: fixed;
@@ -265,49 +254,34 @@ body {
   text-align: center;
   margin: 12px 0;
 }
-
 #calendar {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   gap: 6px;
 }
-
 #calendar .day {
   padding: 10px 0;
   text-align: center;
   cursor: pointer;
   border-radius: 8px;
 }
-#calendar .day:hover {
-  background-color: #ddd;
-}
-#calendar .selected {
-  background-color: #1a482b;
-  color: #fff;
-}
+#calendar .day:hover { background-color: #ddd; }
+#calendar .selected { background-color: #1a482b; color: #fff; }
 
 /* Input */
 .date-input {
   width: 100%;
-  padding: 10px 12px;
+  padding: 12px;
   border-radius: 8px;
   border: 1px solid #ccc;
   font-size: 16px;
-  box-sizing: border-box;
   cursor: pointer;
 }
 
 /* Screenreader Only */
 .sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0,0,0,0);
-  white-space: nowrap;
-  border: 0;
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
 }
 
 /* Monats-Navigation */
@@ -318,70 +292,50 @@ body {
   margin: 12px 0;
 }
 .month-nav {
-  width: 24px;
-  height: 24px;
-  cursor: pointer;
-  position: relative;
+  width: 24px; height: 24px; cursor: pointer; position: relative;
 }
-
-/* Pfeile */
-.arrow-left::before {
-  content: "";
-  display: block;
-  width: 10px;
-  height: 10px;
-  border-left: 3px solid #fff;
-  border-bottom: 3px solid #fff;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%) rotate(45deg);
-}
+.arrow-left::before,
 .arrow-right::before {
-  content: "";
-  display: block;
-  width: 10px;
-  height: 10px;
-  border-right: 3px solid #fff;
-  border-top: 3px solid #fff;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%) rotate(45deg);
+  content: ""; display: block; width: 10px; height: 10px;
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(45deg);
+  border-color: #fff;
 }
-
-/* ====== Hero-Feld fixieren ====== */
-.d-grafik-hero {
-  width: 640px;       /* feste Breite */
-  flex-direction: column;
-  align-items: center;
-  gap: 24px;
-  text-align: center;
-  max-width: none;    /* unbedingt entfernen, dass es schrumpft */
-}
-
-.d-grafik-hero .field-wrap {
-  width: 640px;       /* feste Breite */
-  height: 360px;      /* feste Höhe */
-  max-width: none;
-  aspect-ratio: unset; /* Aspect Ratio entfernen */
-}
-
-.d-grafik-daypicker-icon {
-  width: 624px;       /* feste Breite */
-  height: 429px;      /* feste Höhe */
-  max-width: none;
-}
+.arrow-left::before  { border-left: 3px solid; border-bottom: 3px solid; }
+.arrow-right::before { border-right: 3px solid; border-top: 3px solid; }
 
 /* ====== Responsive ====== */
 @media (max-width: 1100px) {
-  .d-hero { flex-direction: column; text-align: left; }
+  .d-hero { flex-direction: column; align-items: flex-start; gap: 32px; }
   .d-text-hero { width: 100%; }
-  /* .d-grafik-hero { width: 100%; }  <-- löschen */
-  .features { flex-direction: column; }
-  /* .d-grafik-daypicker-icon { width: 100%; } <-- löschen */
+  .wie-viele-personen { font-size: 44px; }
+  .relativ-zur-stadiongrsse { font-size: 28px; }
+
+  .features { flex-direction: column; gap: 28px; }
+  .d-grafik-daypicker-icon,
   .d-text-daypicker,
   .d-home-wie-viele-personen,
   .d-button-date,
-  .es-waren-xy-container { width: 100%; }
+  .es-waren-xy-container { width: 100%; max-width: 720px; }
+}
+
+@media (max-width: 720px) {
+  .d-hero { padding: 32px 16px; gap: 24px; }
+  .wie-viele-personen { font-size: 34px; }
+  .relativ-zur-stadiongrsse { font-size: 22px; }
+
+  .personen { font-size: 28px; }
+  .d-button-date { height: 50px; font-size: 18px; }
+
+  .d-passantenanzahl-datum { padding: 40px 16px 64px; }
+  .d-home-wie-viele-personen { font-size: 20px; width: 100%; }
+  .es-waren-xy-personen-am-jjjj-m-wrapper { font-size: 18px; }
+
+  /* etwas engerer Masken-Offset auf sehr kleinen Screens */
+  #balls-layer-oben  { clip-path: inset(17% 14% 19% 14%); }
+  #balls-layer-unten { clip-path: inset(8% 7% 10% 7%); }
+}
+
+/* Optional: weniger Bewegung, wenn Nutzer*innen das wünschen */
+@media (prefers-reduced-motion: reduce) {
+  .ball { animation: none; }
 }
