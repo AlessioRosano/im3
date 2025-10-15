@@ -33,6 +33,19 @@ DirectoryIndex im3_semesterprojekt/im3_index.php index.php index.html
   </FilesMatch>
 </IfModule>
 
+
+
+RewriteEngine On
+
+# --- Ausnahmen für Diagnose/Cron/Unload ---
+RewriteRule ^im3_diag_db\.php$ - [L]
+RewriteRule ^im3_cron\.php$ - [L]
+RewriteRule ^im3_unload\.php$ - [L]
+
+# (deine bestehenden Regeln danach)
+# Beispiel-Catch-all:
+# RewriteRule . im3_index.php [L]
+
 # (Optional) Caching
 <IfModule mod_expires.c>
   ExpiresActive On
