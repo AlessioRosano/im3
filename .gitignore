@@ -21,3 +21,6 @@ uploads/
 **/im3_cron.log
 
 **/im3_cron.php
+
+**/im3_config.json
+*.env
