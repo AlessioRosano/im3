@@ -1,25 +1,23 @@
-*sftp.json
-.vscode/
-uploads/
-.ds_store
-*/im3_semesterporjekt/im3_config.php //muss im projekt sein, darf aber nicht ins repo
-*/im3_semesterprojekt/im3_cron.php
-
-*/junk/config.php
-*/junk/configtest.php
-*/im3_sarina/config.php
-
-*/im3_config.php
-
-*sftp.json
-.vscode/
-uploads/
-.ds_store
-im3_config.php 
-/im3_cron.php
-/im3_cron.log
-
+# --- OS & Editor ---
 .DS_Store
+**/.DS_Store
+.vscode/
+*.code-workspace
 
+# --- Deployment/SFTP Profile ---
+sftp.json
 
+# --- Runtime/Uploads/Logs ---
+uploads/
+**/uploads/
+*.log
+**/*.log
 
+# --- Projekt: sensible Dateien ---
+# Konfig muss im Projekt liegen, soll aber NIE ins Repo
+**/im3_config.php
+
+# Cron-Log ignorieren
+**/im3_cron.log
+
+**/im3_cron.php
