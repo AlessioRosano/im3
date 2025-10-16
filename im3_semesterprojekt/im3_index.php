@@ -246,43 +246,59 @@
     popup.addEventListener("click", e => { if(e.target === popup) popup.style.display = "none"; });
 
     function renderCalendar(date = currentCalendarDate) {
-      currentCalendarDate = date;
-      calendarEl.innerHTML = "";
-      const year = date.getFullYear();
-      const month = date.getMonth();
+  currentCalendarDate = date;
+  calendarEl.innerHTML = "";
+  const year = date.getFullYear();
+  const month = date.getMonth();
 
-      const monthNames = ["Januar","Februar","März","April","Mai","Juni","Juli","August","September","Oktober","November","Dezember"];
-      calendarMonthEl.textContent = monthNames[month] + ' ' + year;
+  const today = new Date();
+  const todayYMD = formatLocalYMD(today);
 
-      // Wochentag des 1. (0=So ... 6=Sa) -> wir wollen Mo-Start
-      const firstDay = (new Date(year, month, 1).getDay() + 6) % 7; // Montag=0
-      const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const monthNames = ["Januar","Februar","März","April","Mai","Juni","Juli","August","September","Oktober","November","Dezember"];
+  calendarMonthEl.textContent = monthNames[month] + ' ' + year;
 
-      for (let i=0; i<firstDay; i++) {
-        const empty = document.createElement('div');
-        calendarEl.appendChild(empty);
-      }
+  const firstDay = (new Date(year, month, 1).getDay() + 6) % 7; // Montag=0
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
 
-      for (let d=1; d<=daysInMonth; d++) {
-        const dayEl = document.createElement('div');
-        dayEl.textContent = d;
-        dayEl.className = 'day';
-        dayEl.addEventListener('click', () => {
-          calendarEl.querySelectorAll('.day').forEach(e => e.classList.remove('selected'));
-          dayEl.classList.add('selected');
+  for (let i=0; i<firstDay; i++) {
+    const empty = document.createElement('div');
+    calendarEl.appendChild(empty);
+  }
 
-          const selectedDate = new Date(year, month, d);
-          const dateStr = formatLocalYMD(selectedDate);
+  for (let d=1; d<=daysInMonth; d++) {
+    const dayEl = document.createElement('div');
+    dayEl.textContent = d;
+    dayEl.className = 'day';
 
-          dateInput.value = dateStr;
-          dButtonDate.querySelector('b').textContent = dateStr;
-          popup.style.display = 'none';
+    const thisDate = new Date(year, month, d);
+    const thisYMD = formatLocalYMD(thisDate);
 
-          updateDateAndCount(dateStr);
-        });
-        calendarEl.appendChild(dayEl);
-      }
+    // === 🔹 1. Heutiges Datum markieren ===
+    if (thisYMD === todayYMD) {
+      dayEl.classList.add('selected', 'today');
     }
+
+    // === 🔹 2. Zukünftige Tage deaktivieren ===
+    if (thisDate > today) {
+      dayEl.classList.add('disabled');
+      dayEl.style.opacity = "0.4";
+      dayEl.style.pointerEvents = "none";
+    } else {
+      dayEl.addEventListener('click', () => {
+        calendarEl.querySelectorAll('.day').forEach(e => e.classList.remove('selected'));
+        dayEl.classList.add('selected');
+
+        const dateStr = formatLocalYMD(thisDate);
+        dateInput.value = dateStr;
+        dButtonDate.querySelector('b').textContent = dateStr;
+        popup.style.display = 'none';
+        updateDateAndCount(dateStr);
+      });
+    }
+
+    calendarEl.appendChild(dayEl);
+  }
+}
 
     prevMonthBtn.addEventListener('click', () => {
       renderCalendar(new Date(currentCalendarDate.getFullYear(), currentCalendarDate.getMonth() - 1, 1));

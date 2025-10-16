@@ -288,6 +288,15 @@ body {
 #calendar .day:hover { background-color: #ddd; }
 #calendar .selected { background-color: #1a482b; color: #fff; }
 
+#calendar .disabled {
+  color: #777;
+  background: #ccc;
+  cursor: not-allowed;
+}
+#calendar .today {
+  outline: 2px solid #1a482b;
+}
+
 /* Input */
 .date-input {
   width: 100%;
