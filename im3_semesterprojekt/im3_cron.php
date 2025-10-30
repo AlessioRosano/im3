@@ -53,3 +53,5 @@ try {
   http_response_code(500);
   echo "CRON-Fehler: " . $e->getMessage() . "\n";
 }
+
+ini_set('error_log', __DIR__ . '/im3_cron.log');
