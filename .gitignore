@@ -24,3 +24,7 @@ uploads/
 
 **/im3_config.json
 *.env
+
+**/test_db.php
+
+*.test_db.php
