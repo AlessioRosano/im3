@@ -3,7 +3,7 @@
 # Projektbeschreibung
 In unserem Semesterprojekt visualisieren wir den Fussgängerverkehr in der Stadt St. Gallen. Über eine öffentliche API sammelten wir Daten, die zeigen, wie viele Personen an einem Sensor an der Vadianstrasse vorbeigehen. Diese Daten werden auf unserer Website www.im3.sarinadaros.ch dargestellt.
 Auf der Website wird die aktuelle Passantenanzahl in Echtzeit angezeigt. Zur Veranschaulichung fliegen animierte Fussbälle über das Spielfeld des Kybunparks, wobei die Anzahl der Bälle der der Passantenzahl im Verhältnis 1:5 entspricht. Gleichzeitig wird die dadurch erreichte Stadionauslastung berechnet und angezeigt.
-Beim Herunterscrollen gelangt man zu einem zweiten Spielfeld. Rechts befindet sich ein Kalender, über den ein beliebiges Datum ausgewählt werden kann, um zu sehen, wie viele Passanten an diesem Tag durch St. Gallen liefen. Spannend finden wir hier die Daten der Olma Messen Wochenenden :)
+Beim Herunterscrollen gelangt man zu einem zweiten Spielfeld. Rechts befindet sich ein Kalender, über den ein beliebiges Datum ausgewählt werden kann, um zu sehen, wie viele Passanten an diesem Tag durch St. Gallen liefen. Spannend finden wir hier die Daten der Olma Messen Wochenenden.
 
 # Learnings
 Im Laufe des Projekts wurde uns vor allem bewusst, dass man heutzutage die Programmiersprache nicht mehr vollständig 1:1 verstehen muss. Viel wichtiger ist die Fähigkeit zum strukturierten Fehlersuchen. Gerade mit ChatGPT ist man versucht, den Code direkt abzukopieren. Es funktioniert ein bisschen wie Trial and Error.
